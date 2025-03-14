@@ -1,7 +1,20 @@
-FROM pihole/pihole:latest
+FROM pihole/pihole:2025.03.0
 
-COPY install.sh docker.sh pihole-updatelists.* /tmp/pihole-updatelists/
+LABEL maintainer="Sanjin Ivankovic"
+LABEL description="Pi-hole image combined with pihole-updatelists script"
 
-RUN apk add --no-cache php php-pdo_sqlite php-curl php-openssl php-intl php-pcntl php-posix && \
-    bash /tmp/pihole-updatelists/install.sh docker && \
-    rm -fr /tmp/pihole-updatelists
+WORKDIR /tmp/pihole-updatelists
+
+COPY install.sh docker.sh pihole-updatelists.* ./
+
+RUN apk add --no-cache \
+        php \
+        php-pdo_sqlite \
+        php-curl \
+        php-openssl \
+        php-intl \
+        php-pcntl \
+        php-posix \
+    && bash ./install.sh docker \
+    && rm -rf /tmp/pihole-updatelists \
+    && rm -rf /var/cache/apk/*
